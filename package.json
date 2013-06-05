@@ -4,7 +4,9 @@
   "description": "Rewrite rules for JavaScript.",
   "main": "rephrase.js",
   "bin": "./main.js",
-  "scripts": {},
+  "scripts": {
+    "bundle": "node_modules/.bin/cjsify --ignore-missing -o rephrase.min.js -m -x rephrase rephrase.js"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/puffnfresh/rephrase.git"
@@ -28,5 +30,8 @@
     "estraverse": "~1.1.1",
     "fantasy-options": "0.0.1",
     "underscore": "~1.4.4"
+  },
+  "devDependencies": {
+    "commonjs-everywhere": "~0.7.2"
   }
 }
