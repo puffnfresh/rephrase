@@ -167,5 +167,44 @@ rephrase.makeRule = function(forall, from, to) {
     };
 };
 
+function groups(a, n) {
+    var g = [],
+        h,
+        i,
+        j;
+
+    for(i = 0; i <= a.length - n; i++) {
+        h = [];
+        for(j = 0; j < n; j++) {
+            h.push(a[i + j]);
+        }
+        g.push(h);
+    }
+
+    return g;
+}
+
+rephrase.transformSource = function(source) {
+    var esprima = require('esprima'),
+        escodegen = require('escodegen'),
+        tree = esprima.parse(source, {comment: true}),
+        blockComments = _.filter(tree.comments, function(c) {
+            return c.type == 'Block';
+        }),
+        rules = _.map(
+            _.filter(
+                groups(blockComments, 3),
+                function(g) {
+                    return g[0].value.match(rephrase.forallRe);
+                }
+            ),
+            function(g) {
+                return rephrase.makeRule(g[0].value, esprima.parse(g[1].value), esprima.parse(g[2].value));
+            }
+        );
+
+    return escodegen.generate(_.reduce(rules, rephrase, tree));
+}
+
 if(typeof module != 'undefined')
     module.exports = rephrase;
