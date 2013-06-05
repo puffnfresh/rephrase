@@ -1,9 +1,12 @@
 /* forall a f g. */
 /* a.map(f).map(g) */
-/* a.map(function(a) { return f(g(a)); }) */
+/* a.map(compose(f, g)) */
 
-var add1 = add(1),
-    add2 = add(2);
+function compose(f, g) {
+    return function(x) {
+        return f(g(x));
+    };
+}
 
 function add(a) {
     return function(b) {
@@ -12,4 +15,4 @@ function add(a) {
 }
 
 // Do both operations in a single pass!
-console.log([1, 2, 3].map(add1).map(add2));
+console.log([1, 2, 3].map(add(1)).map(add(2)));

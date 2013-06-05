@@ -10,7 +10,7 @@ in a JavaScript file:
 ```javascript
 /* forall a f g. */
 /* a.map(f).map(g) */
-/* a.map(function(a) { return f(g(a)); }) */
+/* a.map(compose(f, g)) */
 ```
 
 The above means whenever we see an expression that looks like
@@ -23,8 +23,11 @@ After we put the above in the header of a JavaScript file, we can
 write code like so:
 
 ```javascript
-var add1 = add(1),
-    add2 = add(2);
+function compose(f, g) {
+    return function(x) {
+        return f(g(x));
+    };
+}
 
 function add(a) {
     return function(b) {
@@ -51,9 +54,7 @@ console.log([
     1,
     2,
     3
-].map(function (a) {
-    return add1(add2(a));
-}));
+].map(compose(add(1), add(2))));
 ```
 
 There is now only a single `map` call. Much more efficient!
