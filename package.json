@@ -1,0 +1,32 @@
+{
+  "name": "rephrase",
+  "version": "0.0.0",
+  "description": "Rewrite rules for JavaScript.",
+  "main": "rephrase.js",
+  "bin": "./main.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/puffnfresh/rephrase.git"
+  },
+  "keywords": [
+    "rewriting",
+    "rewrite",
+    "rules"
+  ],
+  "author": "Brian McKenna",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/puffnfresh/rephrase/issues"
+  },
+  "optionalDependencies": {
+    "esprima": "~1.0.3",
+    "escodegen": "0.0.22"
+  },
+  "dependencies": {
+    "escope": "0.0.14",
+    "estraverse": "~1.1.1",
+    "fantasy-options": "0.0.1",
+    "underscore": "~1.4.4"
+  }
+}
