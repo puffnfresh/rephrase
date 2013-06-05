@@ -110,35 +110,8 @@ function substitute(subs, boundTo, to) {
     });
 }
 
-function rephrase(tree, rule) {
-    return estraverse.replace(tree, {
-        enter: function(node) {
-            return substitutions(node, rule.boundFrom, rule.from).fold(
-                function(subs) {
-                    return substitute(subs, rule.boundTo, rule.to);
-                },
-                function() {
-                    return node;
-                }
-            );
-        }
-    });
-}
-
-function unwrapProgram(tree) {
-    if(tree.type != 'Program')
-        return tree;
-
-    if(tree.body.length > 1)
-        throw new Error('Trying to use a rewrite rule with multiple statements.');
-
-    return tree.body[0].expression;
-}
-
-rephrase.forallRe = /forall((\s+[a-z]+)*)\s*\./;
-rephrase.makeRule = function(forall, from, to) {
+function processRule(bound, from, to) {
     var escope = require('escope'),
-        bound = forall.match(rephrase.forallRe)[1].split(/\s+/).slice(1),
         boundFrom,
         boundTo;
 
@@ -165,7 +138,33 @@ rephrase.makeRule = function(forall, from, to) {
         boundTo: boundTo,
         to: unwrapProgram(to)
     };
-};
+}
+
+function rephrase(tree, rule) {
+    rule = processRule(rule.bound, rule.from, rule.to);
+    return estraverse.replace(tree, {
+        enter: function(node) {
+            return substitutions(node, rule.boundFrom, rule.from).fold(
+                function(subs) {
+                    return substitute(subs, rule.boundTo, rule.to);
+                },
+                function() {
+                    return node;
+                }
+            );
+        }
+    });
+}
+
+function unwrapProgram(tree) {
+    if(tree.type != 'Program')
+        return tree;
+
+    if(tree.body.length > 1)
+        throw new Error('Trying to use a rewrite rule with multiple statements.');
+
+    return tree.body[0].expression;
+}
 
 function groups(a, n) {
     var g = [],
@@ -191,15 +190,20 @@ rephrase.transformSource = function(source) {
         blockComments = _.filter(tree.comments, function(c) {
             return c.type == 'Block';
         }),
+        forallRe = /forall((\s+[a-z]+)*)\s*\./,
         rules = _.map(
             _.filter(
                 groups(blockComments, 3),
                 function(g) {
-                    return g[0].value.match(rephrase.forallRe);
+                    return g[0].value.match(forallRe);
                 }
             ),
             function(g) {
-                return rephrase.makeRule(g[0].value, esprima.parse(g[1].value), esprima.parse(g[2].value));
+                return {
+                    bound: g[0].value.match(forallRe)[1].split(/\s+/).slice(1),
+                    from: esprima.parse(g[1].value),
+                    to: esprima.parse(g[2].value)
+                };
             }
         );
 
