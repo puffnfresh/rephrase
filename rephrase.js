@@ -51,14 +51,18 @@ function substitutions(tree, boundFrom, from) {
     function equalNode(controller, node, fromNode) {
         var name;
 
+        function recurse(name) {
+            _.each(node[name], function(n) {
+                if(n.type)
+                    return;
+
+                equalNode(controller, n, fromNode[name]);
+            });
+        }
+
         for(name in node) {
             if(_.isArray(node[name])) {
-                _.each(node[name], function(n) {
-                    if(n.type)
-                        return;
-
-                    equalNode(controller, n, fromNode[name]);
-                });
+                recurse(name);
             } else if(typeof node[name] == 'object') {
                 if(node[name].type) {
                     // Should be traversed later on.
