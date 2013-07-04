@@ -35,7 +35,7 @@ function add(a) {
     };
 }
 
-console.log([1, 2, 3].map(add1).map(add2));
+console.log([1, 2, 3].map(add(1)).map(add(2)));
 ```
 
 This original code is mapping over our array twice. Those two passes
@@ -45,6 +45,11 @@ If we use the `rephrase` command, we will get the rewritten JavaScript
 output:
 
 ```javascript
+function compose(f, g) {
+    return function (x) {
+        return f(g(x));
+    };
+}
 function add(a) {
     return function (b) {
         return a + b;
