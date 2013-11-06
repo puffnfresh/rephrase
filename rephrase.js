@@ -35,6 +35,25 @@ function extend(a, b) {
     return Option.Some(r);
 }
 
+function deepCopy(o) {
+    var r = {},
+        k;
+
+    for(k in o) {
+        if(o.hasOwnProperty(k)) {
+            if(Object.prototype.toString.call(o[k]) == '[object Array]') {
+                r[k] = o[k].slice();
+            } else if(typeof o[k] == 'object' && o[k] !== null) {
+                r[k] = deepCopy(o[k]);
+            } else {
+                r[k] = o[k];
+            }
+        }
+    }
+
+    return r;
+}
+
 function substitutions(tree, boundFrom, from) {
     var subs = Option.Some({}),
         name;
@@ -100,7 +119,7 @@ function substitutions(tree, boundFrom, from) {
 }
 
 function substitute(subs, boundTo, to) {
-    return estraverse.replace(to, {
+    return estraverse.replace(deepCopy(to), {
         enter: function(node) {
             if(boundTo.indexOf(node) == -1)
                 return;
