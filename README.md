@@ -10,12 +10,12 @@ in a JavaScript file:
 ```javascript
 /* forall a f g. */
 /* a.map(f).map(g) */
-/* a.map(compose(f, g)) */
+/* a.map(compose(g, f)) */
 ```
 
 The above means whenever we see an expression that looks like
 `a.map(f).map(g)` (where `a`, `f` and `g` are "holes"), then we can
-replace that expression with `a.map(function(a) { return f(g(a)); })`
+replace that expression with `a.map(function(a) { return g(f(a)); })`
 (with `a`, `f` and `g` filled in with what occured in the first
 expression).
 
